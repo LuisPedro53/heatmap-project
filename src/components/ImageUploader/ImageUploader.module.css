@@ -1,0 +1,69 @@
+.imageUploaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  border-radius: 15px; /* Bordas mais arredondadas */
+  background-color: #fff; /* Fundo branco */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Sombra mais pronunciada */
+  transition: box-shadow 0.3s ease; /* Efeito de transição na sombra */
+}
+
+.imageUploaderContainer:hover {
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15); /* Sombra mais intensa ao passar o mouse */
+}
+
+.imageUploaderContainer label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 300px; /* Largura maior para o botão */
+  height: 180px; /* Altura maior para o botão */
+  background-color: #f8f8f8; /* Fundo cinza muito claro */
+  border: 2px dashed #ddd; /* Borda tracejada cinza claro */
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.imageUploaderContainer label:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-3px);
+}
+
+.imageUploaderContainer label span {
+  font-size: 18px;
+  font-weight: 600; /* Fonte mais em negrito */
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.imageUploaderContainer label svg {
+  width: 60px;
+  height: 60px;
+  fill: #555;
+  margin-bottom: 15px;
+}
+
+.imageUploaderContainer input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.error {
+  color: #dc3545;
+  margin-top: 10px;
+}
+
+.previewImage {
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
