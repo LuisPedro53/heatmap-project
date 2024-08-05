@@ -1,0 +1,15 @@
+.objectSelectorContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.objectSelectorContainer label {
+  margin-bottom: 5px;
+}
+
+.objectSelectorContainer select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
