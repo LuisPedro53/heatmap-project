@@ -13,21 +13,32 @@ function App() {
 
   useEffect(() => {
     if (imageData && containerRef.current && imageRef.current) {
-      // Initialize heatmap instance
-      const heatmap = window.h337.create({
-        container: containerRef.current!,
-        radius: 50,
-        maxOpacity: 0.6,
-        minOpacity: 0,
-        blur: 0.9,
-      });
-      setHeatmapInstance(heatmap);
-
-      // Adjust the container size based on the image size
       const imageElement = imageRef.current;
-      if (imageElement) {
+
+      const handleImageLoad = () => {
         containerRef.current!.style.width = `${imageElement.width}px`;
         containerRef.current!.style.height = `${imageElement.height}px`;
+
+        // Clean up previous heatmap instance
+        if (heatmapInstance) {
+          heatmapInstance.remove();
+        }
+
+        // Initialize new heatmap instance
+        const heatmap = window.h337.create({
+          container: containerRef.current!,
+          radius: 50,
+          maxOpacity: 0.6,
+          minOpacity: 0,
+          blur: 0.9,
+        });
+        setHeatmapInstance(heatmap);
+      };
+
+      if (imageElement.complete) {
+        handleImageLoad();
+      } else {
+        imageElement.onload = handleImageLoad;
       }
     }
   }, [imageData]);
@@ -37,23 +48,25 @@ function App() {
       try {
         const data = JSON.parse(jsonData);
 
-        // Process the `deepstream-msg` field to extract points
         const points = data.hits.hits.flatMap((hit: any) =>
-          (hit.fields["deepstream-msg"] || []).map((message: string) => {
-            const parts = message.split("|");
-            const xMin = parseFloat(parts[1]);
-            const yMin = parseFloat(parts[2]);
-            const xMax = parseFloat(parts[3]);
-            const yMax = parseFloat(parts[4]);
-            const value = parseFloat(parts[5]); // Ajuste conforme necessário
-
-            // Calcula o centro do retângulo como o ponto de calor
-            const x = (xMin + xMax) / 2;
-            const y = (yMin + yMax) / 2;
-
-            return { x, y, value };
-          })
+          (hit.fields["deepstream-msg"] || [])
+            .filter((message: string) => {
+              const object = message.split("|")[5];
+              return object === selectedObject;
+            })
+            .map((message: string) => {
+              const [, xMin, yMin, xMax, yMax, value] = message.split("|");
+              const x = (parseFloat(xMin) + parseFloat(xMax)) / 2;
+              const y = (parseFloat(yMin) + parseFloat(yMax)) / 2;
+              return { x, y, value: parseFloat(value) };
+            })
         );
+
+        // Clear previous data and set new data
+        heatmapInstance.setData({
+          max: 10, // Ajuste o valor máximo conforme necessário
+          data: [], // Clear previous data
+        });
 
         heatmapInstance.setData({
           max: 10, // Ajuste o valor máximo conforme necessário
@@ -63,7 +76,7 @@ function App() {
         console.error("Erro ao processar o JSON:", error);
       }
     }
-  }, [jsonData, heatmapInstance]);
+  }, [jsonData, heatmapInstance, selectedObject]);
 
   const handleJsonUpload = (data: string | File) => {
     if (typeof data === "string") {
