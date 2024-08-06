@@ -18,7 +18,6 @@ const ObjectSelector: React.FC<ObjectSelectorProps> = ({
       try {
         const data = JSON.parse(jsonData);
 
-        // Acessar deepstream-msg dentro do primeiro elemento de hits
         if (
           data.hits &&
           data.hits.hits &&

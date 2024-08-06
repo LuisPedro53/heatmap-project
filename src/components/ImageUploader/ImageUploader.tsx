@@ -11,7 +11,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
     if (file) {
       setSelectedFile(file);
       setImageUrl(URL.createObjectURL(file));
-      setError(null); // Limpar erro anterior
+      setError(null);
       onImageUpload(file);
     }
   };
@@ -19,7 +19,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     const url = event.target.value;
     setImageUrl(url);
-    setSelectedFile(null); // Limpar arquivo selecionado
+    setSelectedFile(null);
     onImageUpload(url);
   };
 

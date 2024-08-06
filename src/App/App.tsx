@@ -9,11 +9,9 @@ function App() {
   const [selectedObject, setSelectedObject] = useState<string>("");
 
   useEffect(() => {
-    // Verificação condicional para garantir que jsonData existe
     if (jsonData) {
       try {
         const data = JSON.parse(jsonData);
-        // ... (resto da lógica para extrair os tipos de objetos) ...
       } catch (error) {
         console.error("Erro ao analisar o JSON:", error);
       }
