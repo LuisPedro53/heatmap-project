@@ -4,7 +4,7 @@ import styles from "./HeatmapGenerator.module.css";
 interface HeatmapGeneratorProps {
   imageData: File | string | null;
   jsonData: string | null;
-  selectedObject: string;
+  selectedObject: string | null;
 }
 
 const HeatmapGenerator: React.FC<HeatmapGeneratorProps> = ({
@@ -26,7 +26,7 @@ const HeatmapGenerator: React.FC<HeatmapGeneratorProps> = ({
         if (!heatmap) {
           const newHeatmap = window.h337.create({
             container: containerRef.current,
-            radius: 30,
+            radius: 35,
             maxOpacity: 1,
             minOpacity: 0.5,
             blur: 0.5,
@@ -55,14 +55,15 @@ const HeatmapGenerator: React.FC<HeatmapGeneratorProps> = ({
     if (jsonData && heatmap) {
       try {
         const data = JSON.parse(jsonData);
+
         const points = data.hits.hits.flatMap((hit: any) =>
           (hit.fields["deepstream-msg"] || [])
             .filter((msg: string) => msg.split("|")[5] === selectedObject)
             .map((msg: string) => {
-              const [, xMin, yMin, xMax, yMax, value] = msg.split("|");
+              const [, xMin, yMin, xMax, yMax] = msg.split("|");
               const x = (parseFloat(xMin) + parseFloat(xMax)) / 2;
               const y = (parseFloat(yMin) + parseFloat(yMax)) / 2;
-              return { x, y, value: parseFloat(value) };
+              return { x, y, value: 1 };
             })
         );
 
@@ -121,9 +122,11 @@ const HeatmapGenerator: React.FC<HeatmapGeneratorProps> = ({
           />
         )}
       </div>
-      <button className={styles.downloadButton} onClick={downloadImage}>
-        Download Image
-      </button>
+      {imageData && (
+        <button className={styles.downloadButton} onClick={downloadImage}>
+          Download Image
+        </button>
+      )}
     </div>
   );
 };

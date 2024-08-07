@@ -48,6 +48,12 @@ const ObjectSelector: React.FC<ObjectSelectorProps> = ({
     }
   }, [jsonData]);
 
+  useEffect(() => {
+    if (objectTypes.length > 0) {
+      onObjectSelect(objectTypes[0]);
+    }
+  }, [objectTypes, onObjectSelect]);
+
   const handleObjectChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.value;
     setSelectedObject(selected);
