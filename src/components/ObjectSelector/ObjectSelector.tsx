@@ -4,11 +4,13 @@ import styles from "./ObjectSelector.module.css";
 interface ObjectSelectorProps {
   onObjectSelect: (objectType: string) => void;
   jsonData: string | null;
+  imageData: File | string | null;
 }
 
 const ObjectSelector: React.FC<ObjectSelectorProps> = ({
   onObjectSelect,
   jsonData,
+  imageData,
 }) => {
   const [objectTypes, setObjectTypes] = useState<string[]>([]);
   const [selectedObject, setSelectedObject] = useState<string>("");
@@ -33,32 +35,33 @@ const ObjectSelector: React.FC<ObjectSelectorProps> = ({
           ) as string[];
           setObjectTypes(uniqueObjectTypes);
           setSelectedObject(uniqueObjectTypes[0]);
+          onObjectSelect(uniqueObjectTypes[0]); // Atualiza o valor selecionado no componente pai
         } else {
           console.error(
             "O JSON não contém dados de 'deepstream-msg' ou está vazio."
           );
           setObjectTypes([]);
           setSelectedObject("");
+          onObjectSelect(""); // Informa o componente pai que não há seleção
         }
       } catch (error) {
         console.error("Erro ao analisar o JSON:", error);
         setObjectTypes([]);
         setSelectedObject("");
+        onObjectSelect(""); // Informa o componente pai que não há seleção
       }
     }
-  }, [jsonData]);
-
-  useEffect(() => {
-    if (objectTypes.length > 0) {
-      onObjectSelect(objectTypes[0]);
-    }
-  }, [objectTypes, onObjectSelect]);
+  }, [jsonData, onObjectSelect]);
 
   const handleObjectChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.value;
     setSelectedObject(selected);
     onObjectSelect(selected);
   };
+
+  if (!imageData || !jsonData) {
+    return null; // Não renderiza o seletor se imageData ou jsonData não estiverem disponíveis
+  }
 
   return (
     <div className={styles.objectSelectorContainer}>

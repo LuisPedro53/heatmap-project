@@ -13,7 +13,11 @@ function App() {
     <div>
       <ImageUploader onImageUpload={setImageData} />
       <JsonInput onJsonUpload={setJsonData} />
-      <ObjectSelector jsonData={jsonData} onObjectSelect={setSelectedObject} />
+      <ObjectSelector
+        jsonData={jsonData}
+        onObjectSelect={setSelectedObject}
+        imageData={imageData}
+      />
       <HeatmapGenerator
         imageData={imageData}
         jsonData={jsonData}
