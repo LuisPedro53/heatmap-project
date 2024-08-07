@@ -7,85 +7,74 @@ function App() {
   const [imageData, setImageData] = useState<File | string | null>(null);
   const [jsonData, setJsonData] = useState<string | null>(null);
   const [selectedObject, setSelectedObject] = useState<string>("");
-  const [heatmapInstance, setHeatmapInstance] = useState<any>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const [heatmap, setHeatmap] = useState<any>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (imageData && containerRef.current && imageRef.current) {
-      const imageElement = imageRef.current;
+    const handleImageLoad = () => {
+      if (containerRef.current && imgRef.current) {
+        const img = imgRef.current;
+        containerRef.current.style.width = `${img.width}px`;
+        containerRef.current.style.height = `${img.height}px`;
 
-      const handleImageLoad = () => {
-        containerRef.current!.style.width = `${imageElement.width}px`;
-        containerRef.current!.style.height = `${imageElement.height}px`;
-
-        // Clean up previous heatmap instance
-        if (heatmapInstance) {
-          heatmapInstance.remove();
+        if (!heatmap) {
+          const newHeatmap = window.h337.create({
+            container: containerRef.current,
+            radius: 30, // Aumentar o raio dos pontos
+            maxOpacity: 1, // Aumentar a opacidade máxima
+            minOpacity: 0.5, // Aumentar a opacidade mínima
+            blur: 0.5, // Ajustar o blur para maior visibilidade
+            gradient: {
+              // Ajustar o gradiente para cores mais vivas
+              0.1: "blue",
+              0.4: "cyan",
+              0.7: "lime",
+              1.0: "red",
+            },
+          });
+          setHeatmap(newHeatmap);
         }
+      }
+    };
 
-        // Initialize new heatmap instance
-        const heatmap = window.h337.create({
-          container: containerRef.current!,
-          radius: 50,
-          maxOpacity: 0.6,
-          minOpacity: 0,
-          blur: 0.9,
-        });
-        setHeatmapInstance(heatmap);
-      };
-
-      if (imageElement.complete) {
+    if (imageData && imgRef.current) {
+      if (imgRef.current.complete) {
         handleImageLoad();
       } else {
-        imageElement.onload = handleImageLoad;
+        imgRef.current.onload = handleImageLoad;
       }
     }
-  }, [imageData]);
+  }, [imageData, heatmap]);
 
   useEffect(() => {
-    if (jsonData && heatmapInstance) {
+    if (jsonData && heatmap) {
       try {
         const data = JSON.parse(jsonData);
-
         const points = data.hits.hits.flatMap((hit: any) =>
           (hit.fields["deepstream-msg"] || [])
-            .filter((message: string) => {
-              const object = message.split("|")[5];
-              return object === selectedObject;
-            })
-            .map((message: string) => {
-              const [, xMin, yMin, xMax, yMax, value] = message.split("|");
+            .filter((msg: string) => msg.split("|")[5] === selectedObject)
+            .map((msg: string) => {
+              const [, xMin, yMin, xMax, yMax, value] = msg.split("|");
               const x = (parseFloat(xMin) + parseFloat(xMax)) / 2;
               const y = (parseFloat(yMin) + parseFloat(yMax)) / 2;
               return { x, y, value: parseFloat(value) };
             })
         );
 
-        // Clear previous data and set new data
-        heatmapInstance.setData({
-          max: 10, // Ajuste o valor máximo conforme necessário
-          data: [], // Clear previous data
-        });
-
-        heatmapInstance.setData({
-          max: 10, // Ajuste o valor máximo conforme necessário
-          data: points,
-        });
+        heatmap.setData({ max: 10, data: points });
       } catch (error) {
         console.error("Erro ao processar o JSON:", error);
       }
     }
-  }, [jsonData, heatmapInstance, selectedObject]);
+  }, [jsonData, heatmap, selectedObject]);
 
   const handleJsonUpload = (data: string | File) => {
     if (typeof data === "string") {
       setJsonData(data);
     } else {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setJsonData(e.target?.result as string);
-      };
+      reader.onload = (e) => setJsonData(e.target?.result as string);
       reader.readAsText(data);
     }
   };
@@ -98,37 +87,20 @@ function App() {
 
       <div
         ref={containerRef}
-        style={{
-          position: "relative",
-          overflow: "hidden",
-        }}
+        style={{ position: "relative", overflow: "hidden" }}
       >
         {imageData && (
           <img
-            ref={imageRef}
+            ref={imgRef}
             src={
               typeof imageData === "string"
                 ? imageData
                 : URL.createObjectURL(imageData)
             }
             alt="Uploaded"
-            style={{
-              display: "block",
-              maxWidth: "100%",
-              height: "auto",
-            }}
+            style={{ display: "block", maxWidth: "100%", height: "auto" }}
           />
         )}
-        <div
-          id="heatmap"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-          }}
-        ></div>
       </div>
     </div>
   );
