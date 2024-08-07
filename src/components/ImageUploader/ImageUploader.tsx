@@ -6,23 +6,14 @@ interface ImageUploaderProps {
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
-  const [imageUrl, setImageUrl] = useState<string>("");
   const [fileName, setFileName] = useState<string>("Selecione uma imagem");
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setImageUrl(URL.createObjectURL(file));
       setFileName(file.name);
       onImageUpload(file);
     }
-  };
-
-  const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const url = event.target.value;
-    setImageUrl(url);
-    setFileName("Imagem da URL");
-    onImageUpload(url);
   };
 
   return (
