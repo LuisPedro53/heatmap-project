@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import ImageUploader from "../components/ImageUploader/ImageUploader";
 import JsonInput from "../components/JsonInput/JsonInput";
 import ObjectSelector from "../components/ObjectSelector/ObjectSelector";
+import "./App.css"; // Importando o CSS
 
 function App() {
   const [imageData, setImageData] = useState<File | string | null>(null);
@@ -21,12 +22,11 @@ function App() {
         if (!heatmap) {
           const newHeatmap = window.h337.create({
             container: containerRef.current,
-            radius: 30, // Aumentar o raio dos pontos
-            maxOpacity: 1, // Aumentar a opacidade máxima
-            minOpacity: 0.5, // Aumentar a opacidade mínima
-            blur: 0.5, // Ajustar o blur para maior visibilidade
+            radius: 30,
+            maxOpacity: 1,
+            minOpacity: 0.5,
+            blur: 0.5,
             gradient: {
-              // Ajustar o gradiente para cores mais vivas
               0.1: "blue",
               0.4: "cyan",
               0.7: "lime",
@@ -80,27 +80,24 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="appContainer">
       <ImageUploader onImageUpload={setImageData} />
       <JsonInput onJsonUpload={handleJsonUpload} />
       <ObjectSelector jsonData={jsonData} onObjectSelect={setSelectedObject} />
-
-      <div
-        ref={containerRef}
-        style={{ position: "relative", overflow: "hidden" }}
-      >
-        {imageData && (
-          <img
-            ref={imgRef}
-            src={
-              typeof imageData === "string"
-                ? imageData
-                : URL.createObjectURL(imageData)
-            }
-            alt="Uploaded"
-            style={{ display: "block", maxWidth: "100%", height: "auto" }}
-          />
-        )}
+      <div className="containerImg">
+        <div className="heatmapContainer" ref={containerRef}>
+          {imageData && (
+            <img
+              ref={imgRef}
+              src={
+                typeof imageData === "string"
+                  ? imageData
+                  : URL.createObjectURL(imageData)
+              }
+              alt="Uploaded"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

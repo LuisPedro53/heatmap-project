@@ -70,7 +70,7 @@ const HeatmapGenerator: React.FC<HeatmapGeneratorProps> = ({
             .map((msg: string) => {
               const [, xMin, yMin, xMax, yMax] = msg.split("|").map(parseFloat);
               return {
-                x: (xMin + xMax) / 2, // Centróide
+                x: (xMin + xMax) / 2,
                 y: (yMin + yMax) / 2,
                 value: 1,
               };

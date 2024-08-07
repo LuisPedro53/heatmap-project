@@ -7,17 +7,6 @@
   border-radius: 5px;
 }
 
-.textArea {
-  width: 100%;
-  height: 200px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  resize: vertical;
-  font-family: monospace;
-}
-
 .fileInput {
   display: none;
 }
